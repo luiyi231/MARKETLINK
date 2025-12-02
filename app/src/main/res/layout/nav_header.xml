@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@drawable/bg_gradient_drawer_header"
+    android:orientation="vertical"
+    android:paddingStart="56dp"
+    android:paddingEnd="28dp"
+    android:paddingTop="40dp"
+    android:paddingBottom="28dp"
+    android:gravity="start|top"
+    android:fitsSystemWindows="false">
+
+    <!-- Logo/Avatar -->
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@mipmap/ic_launcher_round"
+        android:contentDescription="MarketLink Logo"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_gradient_tracking"
+        android:padding="16dp" />
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MarketLink"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Subtítulo -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Panel de Control"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:alpha="0.95" />
+
+</LinearLayout>
+

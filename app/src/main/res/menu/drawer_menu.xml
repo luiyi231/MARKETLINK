@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- Gestión -->
+    <group android:id="@+id/group_management" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_companies"
+            android:icon="@drawable/ic_storefront"
+            android:title="Perfiles Comerciales"
+            android:checkable="true" />
+        
+
+        
+        <item
+            android:id="@+id/nav_reports"
+            android:icon="@drawable/ic_bar_chart"
+            android:title="Informes y Métricas"
+            android:checkable="true" />
+        
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Configuración"
+            android:checkable="true" />
+    </group>
+
+    <!-- Separador visual -->
+    <item
+        android:id="@+id/nav_separator"
+        android:title=""
+        android:enabled="false"
+        android:visible="false" />
+
+    <!-- Soporte -->
+    <group android:id="@+id/group_secondary" android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@android:drawable/ic_menu_help"
+            android:title="Ayuda y Soporte" />
+        
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Acerca de" />
+    </group>
+
+</menu>
+

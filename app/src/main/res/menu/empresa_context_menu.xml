@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Editar" />
+    <item
+        android:id="@+id/menu_view_sucursales"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Ver Sucursales" />
+    <item
+        android:id="@+id/menu_block"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="Bloquear" />
+</menu>
+

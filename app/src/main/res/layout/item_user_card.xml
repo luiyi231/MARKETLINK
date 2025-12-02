@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_user"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeWidth="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Avatar Circle (Left) - Color based on Role -->
+        <View
+            android:id="@+id/avatar_circle"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_avatar_admin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- User Icon inside Circle -->
+        <ImageView
+            android:id="@+id/iv_user_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_person"
+            app:tint="@color/white"
+            android:contentDescription="User Avatar"
+            app:layout_constraintStart_toStartOf="@id/avatar_circle"
+            app:layout_constraintEnd_toEndOf="@id/avatar_circle"
+            app:layout_constraintTop_toTopOf="@id/avatar_circle"
+            app:layout_constraintBottom_toBottomOf="@id/avatar_circle" />
+
+        <!-- User Name -->
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="Juan Pérez"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/avatar_circle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/chip_rol" />
+
+        <!-- User Email -->
+        <TextView
+            android:id="@+id/tv_user_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:text="juan.perez@example.com"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/avatar_circle"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_name"
+            app:layout_constraintEnd_toStartOf="@id/chip_rol" />
+
+        <!-- Role Chip (Right) - Morado Eléctrico uniforme -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_rol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Administrador"
+            android:textColor="@color/white"
+            app:chipBackgroundColor="@color/colorSecondary"
+            app:chipCornerRadius="8dp"
+            app:chipEndPadding="14dp"
+            app:chipStartPadding="14dp"
+            app:chipMinHeight="36dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Status Chip (Right, below Role) - Verde para Activo con borde sutil -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_estado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Activo"
+            android:textColor="@color/white"
+            app:chipBackgroundColor="@color/colorSuccess"
+            app:chipCornerRadius="8dp"
+            app:chipEndPadding="10dp"
+            app:chipStartPadding="10dp"
+            app:chipMinHeight="28dp"
+            app:chipStrokeColor="@color/green_dark_border"
+            app:chipStrokeWidth="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chip_rol" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

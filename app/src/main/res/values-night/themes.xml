@@ -1,0 +1,68 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme - Dark Mode -->
+    <style name="Base.Theme.MARKETLINK" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Brand Colors - Mantener brillantes para destacar sobre fondo oscuro -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorTertiary">@color/colorAccent</item>
+        
+        <!-- Backgrounds & Surfaces - Modo Oscuro -->
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        
+        <!-- Typography - Modo Oscuro -->
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="android:textColorSecondary">@color/colorTextSecondary</item>
+        
+        <!-- Elevation shadows - más suaves en modo oscuro -->
+        <item name="android:elevation">8dp</item>
+    </style>
+
+    <style name="Theme.MARKETLINK" parent="Base.Theme.MARKETLINK" />
+    
+    <!-- Custom Styles - Dark Mode -->
+    <style name="Widget.MarketLink.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">8dp</item>
+        <item name="android:backgroundTint">@color/cardBackgroundDark</item>
+        <item name="cardMaxElevation">8dp</item>
+        <item name="android:outlineAmbientShadowColor">#40000000</item>
+        <item name="android:outlineSpotShadowColor">#40000000</item>
+    </style>
+
+    <style name="Widget.MarketLink.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeColor">@color/colorTextSecondary</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="hintTextColor">@color/colorTextSecondary</item>
+        <item name="boxBackgroundColor">@color/cardBackgroundDark</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
+    </style>
+    
+    <style name="Widget.MarketLink.Button" parent="Widget.Material3.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:elevation">4dp</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+    </style>
+    
+    <!-- Navigation Drawer Style - Dark Mode -->
+    <style name="Widget.MarketLink.NavigationView" parent="Widget.MaterialComponents.NavigationView">
+        <item name="itemIconTint">@color/nav_item_icon_color</item>
+        <item name="itemTextColor">@color/nav_item_text_color</item>
+        <item name="itemBackground">@drawable/nav_item_background</item>
+        <item name="itemRippleColor">@color/colorPrimary</item>
+        <item name="android:background">@color/colorSurface</item>
+    </style>
+
+    <style name="TextAppearance.MarketLink.Toolbar.Title" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

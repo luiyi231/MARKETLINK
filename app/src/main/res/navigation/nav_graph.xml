@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.marketlink.fragments.auth.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.marketlink.fragments.auth.RegisterFragment"
+        android:label="Registro"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_registerFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.marketlink.fragments.dashboard.DashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/pedidosListFragment"
+        android:name="com.marketlink.fragments.pedidos.PedidosListFragment"
+        android:label="Pedidos"
+        tools:layout="@layout/fragment_pedidos_list" />
+
+    <fragment
+        android:id="@+id/productCatalogFragment"
+        android:name="com.marketlink.fragments.productos.ProductCatalogFragment"
+        android:label="Productos"
+        tools:layout="@layout/fragment_product_catalog">
+        <action
+            android:id="@+id/action_productCatalogFragment_to_addEditProductFragment"
+            app:destination="@id/addEditProductFragment" />
+        <action
+            android:id="@+id/action_productCatalogFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_productCatalogFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditProductFragment"
+        android:name="com.marketlink.fragments.productos.AddEditProductFragment"
+        android:label="Agregar Producto"
+        tools:layout="@layout/fragment_add_edit_product" />
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.marketlink.fragments.cart.CartFragment"
+        android:label="Carrito"
+        tools:layout="@layout/fragment_cart" />
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.marketlink.fragments.productos.ProductDetailFragment"
+        android:label="Detalles del Producto"
+        tools:layout="@layout/fragment_product_detail" />
+
+    <fragment
+        android:id="@+id/empresaListFragment"
+        android:name="com.marketlink.fragments.empresas.EmpresaListFragment"
+        android:label="Perfiles Comerciales"
+        tools:layout="@layout/fragment_empresa_list" />
+
+    <fragment
+        android:id="@+id/userListFragment"
+        android:name="com.marketlink.fragments.usuarios.UserListFragment"
+        android:label="Gestión de Usuarios"
+        tools:layout="@layout/fragment_user_list">
+        <action
+            android:id="@+id/action_userListFragment_to_userDetailFragment"
+            app:destination="@id/userDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.marketlink.fragments.usuarios.UserDetailFragment"
+        android:label="Detalle de Usuario"
+        tools:layout="@layout/fragment_user_detail" />
+
+    <fragment
+        android:id="@+id/reportesFragment"
+        android:name="com.marketlink.fragments.reportes.ReportesFragment"
+        android:label="Informes y Métricas"
+        tools:layout="@layout/fragment_reportes" />
+
+    <fragment
+        android:id="@+id/configuracionFragment"
+        android:name="com.marketlink.fragments.configuracion.ConfiguracionFragment"
+        android:label="Configuración"
+        tools:layout="@layout/fragment_configuracion" />
+
+    <fragment
+        android:id="@+id/ayudaFragment"
+        android:name="com.marketlink.fragments.ayuda.AyudaFragment"
+        android:label="Ayuda y Soporte"
+        tools:layout="@layout/fragment_ayuda" />
+
+    <fragment
+        android:id="@+id/acercaDeFragment"
+        android:name="com.marketlink.fragments.acerca.AcercaDeFragment"
+        android:label="Acerca de"
+        tools:layout="@layout/fragment_acerca_de" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.marketlink.fragments.profile.ProfileFragment"
+        android:label="Perfil"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.marketlink.fragments.tracking.TrackingFragment"
+        android:label="Tracking de Pedido"
+        tools:layout="@layout/fragment_tracking" />
+
+</navigation>

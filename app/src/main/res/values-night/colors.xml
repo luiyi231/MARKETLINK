@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- App Brand Colors - Paleta Vanguardista (Mantener brillantes para destacar) -->
+    <color name="colorPrimary">#3B82F6</color> <!-- Azul Rey vivo -->
+    <color name="colorSecondary">#9333EA</color> <!-- Morado Eléctrico -->
+    <color name="colorAccent">#14B8A6</color> <!-- Turquesa/Cian Moderno -->
+    <color name="colorWarning">#F97316</color> <!-- Naranja Fuerte -->
+    <color name="colorSuccess">#22C55E</color> <!-- Verde Vigoroso -->
+    <color name="colorAlert">#F97316</color> <!-- Naranja Fuerte (alias) -->
+    <color name="green_dark_border">#16A34A</color> <!-- Verde Oscuro para borde -->
+
+    <!-- Backgrounds & Surfaces - Modo Oscuro -->
+    <color name="colorSurface">#1F2937</color> <!-- Gris Oscuro Profundo -->
+    <color name="colorBackground">#121212</color> <!-- Fondo Principal Oscuro -->
+    <color name="colorOnSurface">#F9FAFB</color> <!-- Blanco/Gris Muy Claro para texto -->
+
+    <!-- Typography - Modo Oscuro -->
+    <color name="colorTextPrimary">#F9FAFB</color> <!-- Blanco/Gris Muy Claro -->
+    <color name="colorTextSecondary">#9CA3AF</color> <!-- Gris Medio Claro -->
+
+    <!-- Status Colors - Modo Oscuro -->
+    <color name="colorStatusPendingBg">#78350F</color> <!-- Naranja Oscuro -->
+    <color name="colorStatusPending">#F97316</color>
+    <color name="colorStatusInProgress">#3B82F6</color>
+    <color name="colorStatusSuccessBg">#166534</color> <!-- Verde Oscuro -->
+    <color name="colorStatusSuccessText">#FFFFFF</color>
+    <color name="colorStatusPendingText">#F9FAFB</color>
+    
+    <!-- Métricas Gradients (Start/End) - Degradados Sofisticados (Mantener vibrantes) -->
+    <color name="grad_metric_pending_start">#F97316</color> <!-- Naranja Fuerte -->
+    <color name="grad_metric_pending_end">#FBBA5E</color> <!-- Naranja Suave -->
+    
+    <color name="grad_metric_income_start">#14B8A6</color> <!-- Turquesa Moderno -->
+    <color name="grad_metric_income_end">#5EEAD4</color> <!-- Cian Pastel -->
+    
+    <color name="grad_metric_delivery_start">#22C55E</color> <!-- Verde Vigoroso -->
+    <color name="grad_metric_delivery_end">#86EFAC</color> <!-- Verde Claro -->
+    
+    <!-- Module Gradients (Start/End) - Degradados Sofisticados (Mantener vibrantes) -->
+    <color name="grad_orders_start">#3B82F6</color> <!-- Azul Rey -->
+    <color name="grad_orders_end">#60A5FA</color> <!-- Azul Eléctrico -->
+    
+    <color name="grad_products_start">#9333EA</color> <!-- Morado Eléctrico -->
+    <color name="grad_products_end">#C084FC</color> <!-- Lila Vibrante -->
+    
+    <color name="grad_companies_start">#16A34A</color> <!-- Verde Bosque -->
+    <color name="grad_companies_end">#4ADE80</color> <!-- Verde Brillante -->
+    
+    <color name="grad_users_start">#6B7280</color> <!-- Gris Medio -->
+    <color name="grad_users_end">#9CA3AF</color> <!-- Gris Plateado -->
+    
+    <color name="grad_reports_start">#F97316</color> <!-- Naranja Fuerte -->
+    <color name="grad_reports_end">#FBBA5E</color> <!-- Naranja Suave -->
+    
+    <color name="grad_settings_start">#475569</color> <!-- Gris Azulado Oscuro -->
+    <color name="grad_settings_end">#94A3B8</color> <!-- Gris Azulado Claro -->
+    
+    <color name="grad_tracking_start">#14B8A6</color> <!-- Turquesa -->
+    <color name="grad_tracking_end">#5EEAD4</color> <!-- Cian Pastel -->
+    
+    <!-- AppBar Gradient Colors -->
+    <color name="colorPrimaryDark">#3B82F6</color> <!-- Azul Rey -->
+    <color name="colorPurpleVibrant">#6D28D9</color> <!-- Morado Vibrante -->
+
+    <!-- Card Background for Dark Mode -->
+    <color name="cardBackgroundDark">#2D3748</color> <!-- Gris ligeramente más claro que el fondo -->
+</resources>
+
