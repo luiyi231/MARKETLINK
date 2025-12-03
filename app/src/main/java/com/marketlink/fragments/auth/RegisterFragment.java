@@ -6,11 +6,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -29,11 +35,16 @@ public class RegisterFragment extends Fragment {
     private TextInputEditText etRazonSocial;
     private TextInputEditText etNit;
     private TextInputEditText etDireccion;
+    private android.widget.AutoCompleteTextView actvCiudad;
+    private TextInputEditText etDireccionCliente;
     private RadioGroup rgTipoUsuario;
     private RadioButton rbEmprendedor;
     private RadioButton rbConsumidor;
     private MaterialButton btnRegister;
     private View llEmpresaFields;
+    private View llClienteFields;
+    private List<com.marketlink.models.Ciudad> ciudades = new ArrayList<>();
+    private String ciudadIdSeleccionada = null;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -59,21 +70,29 @@ public class RegisterFragment extends Fragment {
         etRazonSocial = view.findViewById(R.id.et_razon_social);
         etNit = view.findViewById(R.id.et_nit);
         etDireccion = view.findViewById(R.id.et_direccion);
+        actvCiudad = view.findViewById(R.id.actv_ciudad);
+        etDireccionCliente = view.findViewById(R.id.et_direccion_cliente);
         rgTipoUsuario = view.findViewById(R.id.rg_tipo_usuario);
         rbEmprendedor = view.findViewById(R.id.rb_emprendedor);
         rbConsumidor = view.findViewById(R.id.rb_consumidor);
         btnRegister = view.findViewById(R.id.btn_register);
         llEmpresaFields = view.findViewById(R.id.ll_empresa_fields);
+        llClienteFields = view.findViewById(R.id.ll_cliente_fields);
+        
+        // Cargar ciudades
+        cargarCiudades();
 
         // Por defecto seleccionar Consumidor
         rbConsumidor.setChecked(true);
 
-        // Mostrar/ocultar campos de empresa según selección
+        // Mostrar/ocultar campos según selección
         rgTipoUsuario.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rb_emprendedor) {
                 llEmpresaFields.setVisibility(View.VISIBLE);
+                llClienteFields.setVisibility(View.GONE);
             } else {
                 llEmpresaFields.setVisibility(View.GONE);
+                llClienteFields.setVisibility(View.VISIBLE);
             }
         });
 
@@ -188,21 +207,36 @@ public class RegisterFragment extends Fragment {
                     email, password, nombre, apellido, telefono, razonSocial, nit, direccion);
             call = apiService.registroEmpresa(registroEmpresaRequest);
         } else {
+            // Validar ciudad para cliente
+            if (ciudadIdSeleccionada == null || ciudadIdSeleccionada.isEmpty()) {
+                Toast.makeText(getContext(), "Debe seleccionar una ciudad", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            String direccionCliente = etDireccionCliente.getText() != null ? 
+                etDireccionCliente.getText().toString().trim() : null;
+            
             // Registrar cliente
             com.marketlink.models.RegistroRequest registroRequest = 
                 new com.marketlink.models.RegistroRequest(
-                    email, password, nombre, apellido, telefono, "Cliente");
+                    email, password, nombre, apellido, telefono, "Cliente", 
+                    ciudadIdSeleccionada, direccionCliente);
             call = apiService.registro(registroRequest);
         }
         call.enqueue(new retrofit2.Callback<com.marketlink.models.AuthResponse>() {
             @Override
             public void onResponse(retrofit2.Call<com.marketlink.models.AuthResponse> call,
                     retrofit2.Response<com.marketlink.models.AuthResponse> response) {
+                // Verificar que el fragment esté adjunto antes de continuar
+                if (!isAdded() || getActivity() == null || getContext() == null) {
+                    return;
+                }
+
                 if (response.isSuccessful() && response.body() != null) {
                     com.marketlink.models.AuthResponse authResponse = response.body();
 
                     // Guardar información del usuario en SharedPreferences
-                    SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences prefs = getActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("auth_token", authResponse.getToken());
                     editor.putString("user_id", authResponse.getUsuarioId());
@@ -217,9 +251,18 @@ public class RegisterFragment extends Fragment {
                             "¡Registro exitoso como " + authResponse.getRol() + "!",
                             Toast.LENGTH_LONG).show();
 
-                    // Navegar al Dashboard
-                    Navigation.findNavController(requireView())
-                            .navigate(R.id.action_registerFragment_to_dashboardFragment);
+                    // Navegar según el tipo de usuario
+                    View view = getView();
+                    if (view != null && isAdded()) {
+                        String rol = authResponse.getRol();
+                        if ("Cliente".equals(rol)) {
+                            Navigation.findNavController(view)
+                                    .navigate(R.id.action_registerFragment_to_homeFragment);
+                        } else {
+                            Navigation.findNavController(view)
+                                    .navigate(R.id.action_registerFragment_to_dashboardFragment);
+                        }
+                    }
                 } else {
                     // Intentar leer el mensaje de error del body
                     String errorMessage = "Registro fallido";
@@ -241,13 +284,74 @@ public class RegisterFragment extends Fragment {
                     } catch (Exception e) {
                         errorMessage = response.message() != null ? response.message() : "Error desconocido";
                     }
-                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<com.marketlink.models.AuthResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                // Verificar que el fragment esté adjunto antes de mostrar el error
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void cargarCiudades() {
+        com.marketlink.network.ApiService apiService = com.marketlink.network.ApiClient.getClient()
+                .create(com.marketlink.network.ApiService.class);
+        
+        retrofit2.Call<List<com.marketlink.models.Ciudad>> call = apiService.getCiudades();
+        call.enqueue(new retrofit2.Callback<List<com.marketlink.models.Ciudad>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<com.marketlink.models.Ciudad>> call,
+                    retrofit2.Response<List<com.marketlink.models.Ciudad>> response) {
+                // Verificar que el fragment esté adjunto antes de continuar
+                if (!isAdded() || getContext() == null || actvCiudad == null) {
+                    return;
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    ciudades = response.body();
+                    // Filtrar solo ciudades activas
+                    ciudades = ciudades.stream()
+                        .filter(c -> c.getActiva() != null && c.getActiva())
+                        .collect(java.util.stream.Collectors.toList());
+                    
+                    // Configurar AutoCompleteTextView
+                    List<String> nombresCiudades = new ArrayList<>();
+                    for (com.marketlink.models.Ciudad ciudad : ciudades) {
+                        nombresCiudades.add(ciudad.getNombre());
+                    }
+                    
+                    android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+                        getContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        nombresCiudades
+                    );
+                    actvCiudad.setAdapter(adapter);
+                    
+                    actvCiudad.setOnItemClickListener((parent, view, position, id) -> {
+                        String nombreCiudad = (String) parent.getItemAtPosition(position);
+                        ciudadIdSeleccionada = ciudades.stream()
+                            .filter(c -> c.getNombre().equals(nombreCiudad))
+                            .findFirst()
+                            .map(com.marketlink.models.Ciudad::getId)
+                            .orElse(null);
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<com.marketlink.models.Ciudad>> call, Throwable t) {
+                // Verificar que el fragment esté adjunto antes de mostrar el error
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(getContext(), "Error al cargar ciudades: " + t.getMessage(), 
+                        Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

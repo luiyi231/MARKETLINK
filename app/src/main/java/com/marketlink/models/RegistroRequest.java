@@ -7,6 +7,8 @@ public class RegistroRequest {
     private String apellido;
     private String telefono;
     private String rol;
+    private String ciudadId;
+    private String direccion;
 
     public RegistroRequest(String email, String password, String nombre, String apellido, String telefono, String rol) {
         this.email = email;
@@ -15,6 +17,17 @@ public class RegistroRequest {
         this.apellido = apellido;
         this.telefono = telefono;
         this.rol = rol;
+    }
+
+    public RegistroRequest(String email, String password, String nombre, String apellido, String telefono, String rol, String ciudadId, String direccion) {
+        this.email = email;
+        this.password = password;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.telefono = telefono;
+        this.rol = rol;
+        this.ciudadId = ciudadId;
+        this.direccion = direccion;
     }
 
     public String getEmail() {
@@ -63,5 +76,21 @@ public class RegistroRequest {
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public String getCiudadId() {
+        return ciudadId;
+    }
+
+    public void setCiudadId(String ciudadId) {
+        this.ciudadId = ciudadId;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 }

@@ -283,6 +283,78 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Change Perfil Comercial Card (Solo para Empresas) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_change_perfil_comercial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:id="@+id/iv_store"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_storefront"
+                        app:tint="@color/colorTextSecondary"
+                        android:contentDescription="Perfil Comercial"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/layout_perfil_info"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintStart_toEndOf="@id/iv_store"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/iv_chevron_perfil"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:id="@+id/tv_change_perfil_comercial"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Cambiar Perfil Comercial"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tv_perfil_activo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Ninguno seleccionado"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="12sp"
+                            android:layout_marginTop="2dp" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/iv_chevron_perfil"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/colorTextSecondary"
+                        android:contentDescription="Ver más"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Logout Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_logout"

@@ -67,7 +67,6 @@ public class UserListFragment extends Fragment {
         }
 
         rvUsers = view.findViewById(R.id.rv_users);
-        fabAddUser = view.findViewById(R.id.fab_add_user);
 
         // Setup RecyclerView
         rvUsers.setLayoutManager(new LinearLayoutManager(getContext()));

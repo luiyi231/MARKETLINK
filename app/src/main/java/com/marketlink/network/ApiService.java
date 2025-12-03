@@ -1,6 +1,7 @@
 package com.marketlink.network;
 
 import com.marketlink.models.AuthResponse;
+import com.marketlink.models.CreateSuscripcionRequest;
 import com.marketlink.models.LoginRequest;
 import com.marketlink.models.RegistroRequest;
 import com.marketlink.models.RegistroEmpresaRequest;
@@ -13,6 +14,8 @@ import com.marketlink.models.Plan;
 import com.marketlink.models.Empresa;
 import com.marketlink.models.PerfilComercial;
 import com.marketlink.models.UpdateEstadoRequest;
+import com.marketlink.models.Cliente;
+import com.marketlink.models.SuscripcionEmpresa;
 
 import java.util.List;
 
@@ -115,10 +118,40 @@ public interface ApiService {
     @PUT("api/Perfiles/{id}")
     Call<PerfilComercial> updatePerfil(@Path("id") String id, @Body PerfilComercial perfil);
 
+    // Clientes
+    @GET("api/Clientes/mi-perfil")
+    Call<Cliente> getMiPerfilCliente();
+
+    @PUT("api/Clientes/mi-perfil")
+    Call<Cliente> updateMiPerfilCliente(@Body Cliente cliente);
+
+    // Empresas
+    @GET("api/Empresas")
+    Call<List<Empresa>> getEmpresas();
+
+    @GET("api/Empresas/{id}")
+    Call<Empresa> getEmpresa(@Path("id") String id);
+
     // Planes
     @GET("api/Planes")
     Call<List<Plan>> getPlanes();
 
     @GET("api/Planes/{id}")
     Call<Plan> getPlan(@Path("id") String id);
+
+    // Suscripciones
+    @GET("api/Suscripciones/mi-suscripcion")
+    Call<SuscripcionEmpresa> getMiSuscripcion();
+
+    @GET("api/Suscripciones/mis-suscripciones")
+    Call<List<SuscripcionEmpresa>> getMisSuscripciones();
+
+    @POST("api/Suscripciones")
+    Call<SuscripcionEmpresa> createSuscripcion(@Body CreateSuscripcionRequest request);
+
+    @PUT("api/Suscripciones/{id}/renovar")
+    Call<SuscripcionEmpresa> renovarSuscripcion(@Path("id") String id);
+
+    @PUT("api/Suscripciones/{id}/cancelar")
+    Call<SuscripcionEmpresa> cancelarSuscripcion(@Path("id") String id);
 }

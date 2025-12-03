@@ -122,19 +122,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Configurar bottom navigation según tipo de usuario
         if (bottomNavigationView != null && bottomNavigationView.getMenu() != null) {
+            MenuItem homeItem = bottomNavigationView.getMenu().findItem(R.id.homeFragment);
+            MenuItem dashboardItem = bottomNavigationView.getMenu().findItem(R.id.dashboardFragment);
             MenuItem cartItem = bottomNavigationView.getMenu().findItem(R.id.cartFragment);
             MenuItem pedidosItem = bottomNavigationView.getMenu().findItem(R.id.pedidosListFragment);
+            MenuItem productosItem = bottomNavigationView.getMenu().findItem(R.id.productCatalogFragment);
             
             android.util.Log.d("MainActivity", "Configurando bottom nav - tipoUsuario: " + tipoUsuario);
-            android.util.Log.d("MainActivity", "CartItem encontrado: " + (cartItem != null));
             
             if ("Cliente".equals(tipoUsuario)) {
-                // Cliente puede ver el carrito y pedidos
+                // Cliente ve: Inicio, Pedidos, Carrito, Perfil
+                if (homeItem != null) {
+                    homeItem.setVisible(true);
+                    homeItem.setEnabled(true);
+                }
+                if (dashboardItem != null) {
+                    dashboardItem.setVisible(false);
+                    dashboardItem.setEnabled(false);
+                }
+                if (productosItem != null) {
+                    productosItem.setVisible(false);
+                    productosItem.setEnabled(false);
+                }
                 if (cartItem != null) {
                     cartItem.setVisible(true);
                     cartItem.setEnabled(true);
-                    android.util.Log.d("MainActivity", "Carrito visible para Cliente");
-                    
                     // Actualizar badge con cantidad de items
                     actualizarBadgeCarrito(cartItem);
                 }
@@ -142,11 +154,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     pedidosItem.setVisible(true);
                 }
             } else {
-                // Empresa y Administrador NO ven el carrito, pero sí ven pedidos
+                // Empresa y Administrador ven: Dashboard, Pedidos, Productos, Perfil
+                if (homeItem != null) {
+                    homeItem.setVisible(false);
+                    homeItem.setEnabled(false);
+                }
+                if (dashboardItem != null) {
+                    dashboardItem.setVisible(true);
+                    dashboardItem.setEnabled(true);
+                }
+                if (productosItem != null) {
+                    productosItem.setVisible(true);
+                    productosItem.setEnabled(true);
+                }
                 if (cartItem != null) {
                     cartItem.setVisible(false);
                     cartItem.setEnabled(false);
-                    android.util.Log.d("MainActivity", "Carrito oculto para " + tipoUsuario);
                 }
                 if (pedidosItem != null) {
                     pedidosItem.setVisible(true);

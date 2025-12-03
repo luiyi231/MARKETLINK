@@ -61,8 +61,15 @@ public class ProductCatalogFragment extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         tipoUsuario = prefs.getString("user_tipo", "Cliente");
         
+        // Verificar si hay argumentos (categoría seleccionada)
+        String categoriaId = null;
+        if (getArguments() != null) {
+            categoriaId = getArguments().getString("categoria_id");
+        }
+        
         android.util.Log.d("ProductCatalog", "=== INICIO DEBUG ===");
         android.util.Log.d("ProductCatalog", "Tipo de usuario: " + tipoUsuario);
+        android.util.Log.d("ProductCatalog", "Categoría ID: " + categoriaId);
 
         rvProducts = view.findViewById(R.id.rv_products);
         fabAddProduct = view.findViewById(R.id.fab_add_product);
@@ -153,8 +160,145 @@ public class ProductCatalogFragment extends Fragment {
         
         android.util.Log.d("ProductCatalog", "=== FIN CONFIGURACIÓN FAB ===");
         
+        // Verificar si hay perfil_id en los argumentos (viene de PlanesYPerfilesFragment)
+        String perfilIdArg = null;
+        if (getArguments() != null) {
+            perfilIdArg = getArguments().getString("perfil_id");
+        }
+        
+        // Si es empresa, obtener perfil comercial seleccionado
+        String perfilSeleccionadoId = null;
+        if ("Empresa".equals(tipoUsuario) || "Administrador".equals(tipoUsuario)) {
+            perfilSeleccionadoId = prefs.getString("perfil_comercial_seleccionado_id", null);
+        }
+        
         // Cargar productos y perfiles desde el backend
-        loadPerfilesYProductos();
+        // Si hay categoriaId, cargar productos de esa categoría
+        if (categoriaId != null && !categoriaId.isEmpty()) {
+            loadProductosPorCategoria(categoriaId);
+        } else if (perfilIdArg != null && !perfilIdArg.isEmpty()) {
+            // Si viene de PlanesYPerfilesFragment, cargar productos de ese perfil
+            loadProductosPorPerfil(perfilIdArg);
+        } else if (perfilSeleccionadoId != null && !perfilSeleccionadoId.isEmpty()) {
+            // Si hay un perfil seleccionado, cargar solo productos de ese perfil
+            loadProductosPorPerfil(perfilSeleccionadoId);
+        } else {
+            loadPerfilesYProductos();
+        }
+    }
+    
+    private void loadProductosPorCategoria(String categoriaId) {
+        progressBar.setVisibility(View.VISIBLE);
+        
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<List<Producto>> call = apiService.getProductosByCategoria(categoriaId);
+        
+        call.enqueue(new Callback<List<Producto>>() {
+            @Override
+            public void onResponse(Call<List<Producto>> call, Response<List<Producto>> response) {
+                progressBar.setVisibility(View.GONE);
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    productos = response.body();
+                    
+                    // Si es cliente, filtrar por ciudad
+                    if ("Cliente".equals(tipoUsuario)) {
+                        filtrarProductosPorCiudad();
+                    } else {
+                        productAdapter.updateList(productos);
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Error al cargar productos: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Producto>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    private void loadProductosPorPerfil(String perfilId) {
+        progressBar.setVisibility(View.VISIBLE);
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<List<Producto>> call = apiService.getProductosByPerfil(perfilId);
+        
+        call.enqueue(new Callback<List<Producto>>() {
+            @Override
+            public void onResponse(Call<List<Producto>> call, Response<List<Producto>> response) {
+                progressBar.setVisibility(View.GONE);
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    productos = response.body();
+                    productAdapter.updateList(productos);
+                } else {
+                    Toast.makeText(getContext(), "Error al cargar productos: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Producto>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void filtrarProductosPorCiudad() {
+        // Obtener ciudad del cliente y filtrar productos
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<com.marketlink.models.Cliente> callCliente = apiService.getMiPerfilCliente();
+        
+        callCliente.enqueue(new Callback<com.marketlink.models.Cliente>() {
+            @Override
+            public void onResponse(Call<com.marketlink.models.Cliente> call, Response<com.marketlink.models.Cliente> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String ciudadId = response.body().getCiudadId();
+                    
+                    if (ciudadId != null && !ciudadId.isEmpty()) {
+                        // Obtener perfiles de la ciudad
+                        Call<List<PerfilComercial>> callPerfiles = apiService.getPerfiles();
+                        callPerfiles.enqueue(new Callback<List<PerfilComercial>>() {
+                            @Override
+                            public void onResponse(Call<List<PerfilComercial>> call, Response<List<PerfilComercial>> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    List<String> perfilesIds = response.body().stream()
+                                        .filter(p -> ciudadId.equals(p.getCiudadId()))
+                                        .map(PerfilComercial::getId)
+                                        .filter(id -> id != null)
+                                        .collect(java.util.stream.Collectors.toList());
+                                    
+                                    // Filtrar productos que pertenezcan a esos perfiles
+                                    List<Producto> productosFiltrados = productos.stream()
+                                        .filter(p -> perfilesIds.contains(p.getPerfilComercialId()))
+                                        .collect(java.util.stream.Collectors.toList());
+                                    
+                                    productAdapter.updateList(productosFiltrados);
+                                } else {
+                                    productAdapter.updateList(productos);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<PerfilComercial>> call, Throwable t) {
+                                productAdapter.updateList(productos);
+                            }
+                        });
+                    } else {
+                        productAdapter.updateList(productos);
+                    }
+                } else {
+                    productAdapter.updateList(productos);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.marketlink.models.Cliente> call, Throwable t) {
+                productAdapter.updateList(productos);
+            }
+        });
     }
     
     private void handleFabClick() {
@@ -179,7 +323,16 @@ public class ProductCatalogFragment extends Fragment {
                 android.util.Log.d("ProductCatalog", "Action ID: " + actionId);
                 
                 android.util.Log.d("ProductCatalog", "Intentando navegar con acción...");
-                navController.navigate(actionId);
+                // Si es empresa, pasar el perfil seleccionado
+                Bundle args = new Bundle();
+                if ("Empresa".equals(tipoUsuario)) {
+                    SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+                    String perfilSeleccionadoId = prefs.getString("perfil_comercial_seleccionado_id", null);
+                    if (perfilSeleccionadoId != null && !perfilSeleccionadoId.isEmpty()) {
+                        args.putString("perfil_id", perfilSeleccionadoId);
+                    }
+                }
+                navController.navigate(actionId, args);
                 android.util.Log.d("ProductCatalog", "Navegación con acción ejecutada");
             } else {
                 android.util.Log.e("ProductCatalog", "NavController es null!");
@@ -245,34 +398,183 @@ public class ProductCatalogFragment extends Fragment {
 
     private void loadProductos() {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<List<Producto>> call = apiService.getProductosDisponibles();
         
-        call.enqueue(new Callback<List<Producto>>() {
-            @Override
-            public void onResponse(Call<List<Producto>> call, Response<List<Producto>> response) {
+        // Si es cliente, obtener su ciudad y filtrar productos
+        if ("Cliente".equals(tipoUsuario)) {
+            obtenerProductosPorCiudad(apiService);
+        } else if ("Empresa".equals(tipoUsuario)) {
+            // Empresas ven solo productos de su perfil seleccionado
+            SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+            String perfilSeleccionadoId = prefs.getString("perfil_comercial_seleccionado_id", null);
+            
+            if (perfilSeleccionadoId != null && !perfilSeleccionadoId.isEmpty()) {
+                loadProductosPorPerfil(perfilSeleccionadoId);
+            } else {
+                // Si no hay perfil seleccionado, mostrar mensaje
                 progressBar.setVisibility(View.GONE);
-                
+                Toast.makeText(getContext(), "Selecciona un perfil comercial en tu perfil para ver productos", Toast.LENGTH_LONG).show();
+                productos = new ArrayList<>();
+                productAdapter.updateList(productos);
+            }
+        } else {
+            // Administradores ven todos los productos
+            Call<List<Producto>> call = apiService.getProductosDisponibles();
+            
+            call.enqueue(new Callback<List<Producto>>() {
+                @Override
+                public void onResponse(Call<List<Producto>> call, Response<List<Producto>> response) {
+                    progressBar.setVisibility(View.GONE);
+                    
+                    if (response.isSuccessful() && response.body() != null) {
+                        productos = response.body();
+                        productAdapter.updateList(productos);
+                    } else {
+                        Toast.makeText(getContext(), "Error al cargar productos: " + response.message(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Producto>> call, Throwable t) {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void obtenerProductosPorCiudad(ApiService apiService) {
+        // Obtener perfil del cliente para saber su ciudad
+        Call<com.marketlink.models.Cliente> callCliente = apiService.getMiPerfilCliente();
+        callCliente.enqueue(new Callback<com.marketlink.models.Cliente>() {
+            @Override
+            public void onResponse(Call<com.marketlink.models.Cliente> call, Response<com.marketlink.models.Cliente> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    productos = response.body();
-                    productAdapter.updateList(productos);
+                    String ciudadId = response.body().getCiudadId();
+                    
+                    if (ciudadId != null && !ciudadId.isEmpty()) {
+                        // Obtener perfiles comerciales de la ciudad
+                        Call<List<PerfilComercial>> callPerfiles = apiService.getPerfiles();
+                        callPerfiles.enqueue(new Callback<List<PerfilComercial>>() {
+                            @Override
+                            public void onResponse(Call<List<PerfilComercial>> call, Response<List<PerfilComercial>> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    // Filtrar perfiles por ciudad
+                                    List<String> perfilesIds = response.body().stream()
+                                        .filter(p -> ciudadId.equals(p.getCiudadId()) && 
+                                                   p.getActivo() != null && p.getActivo())
+                                        .map(PerfilComercial::getId)
+                                        .filter(id -> id != null)
+                                        .collect(java.util.stream.Collectors.toList());
+                                    
+                                    // Obtener productos de esos perfiles
+                                    cargarProductosDePerfiles(perfilesIds);
+                                } else {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(getContext(), "No se encontraron empresas en tu ciudad", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<PerfilComercial>> call, Throwable t) {
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(getContext(), "Error al cargar empresas: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "No tienes ciudad asignada. Actualiza tu perfil.", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(getContext(), "Error al cargar productos: " + response.message(), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Error al obtener información del cliente", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Producto>> call, Throwable t) {
+            public void onFailure(Call<com.marketlink.models.Cliente> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void cargarProductosDePerfiles(List<String> perfilesIds) {
+        if (perfilesIds.isEmpty()) {
+            progressBar.setVisibility(View.GONE);
+            productos = new ArrayList<>();
+            productAdapter.updateList(productos);
+            return;
+        }
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        List<Producto> todosProductos = new ArrayList<>();
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(perfilesIds.size());
+
+        for (String perfilId : perfilesIds) {
+            Call<List<Producto>> call = apiService.getProductosByPerfil(perfilId);
+            call.enqueue(new Callback<List<Producto>>() {
+                @Override
+                public void onResponse(Call<List<Producto>> call, Response<List<Producto>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        synchronized (todosProductos) {
+                            todosProductos.addAll(response.body().stream()
+                                .filter(p -> p.getDisponible() != null && p.getDisponible() && 
+                                           p.getStock() != null && p.getStock() > 0)
+                                .collect(java.util.stream.Collectors.toList()));
+                        }
+                    }
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(Call<List<Producto>> call, Throwable t) {
+                    latch.countDown();
+                }
+            });
+        }
+
+        // Esperar a que todas las llamadas terminen
+        new Thread(() -> {
+            try {
+                latch.await();
+                requireActivity().runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    productos = todosProductos;
+                    productAdapter.updateList(productos);
+                });
+            } catch (InterruptedException e) {
+                requireActivity().runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Error al cargar productos", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }).start();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         // Recargar productos cuando el fragment vuelve a ser visible
-        loadProductos();
+        // Verificar si hay perfil_id en los argumentos
+        String perfilIdArg = null;
+        if (getArguments() != null) {
+            perfilIdArg = getArguments().getString("perfil_id");
+        }
+        
+        // Si es empresa, obtener perfil comercial seleccionado
+        String perfilSeleccionadoId = null;
+        if ("Empresa".equals(tipoUsuario) || "Administrador".equals(tipoUsuario)) {
+            SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+            perfilSeleccionadoId = prefs.getString("perfil_comercial_seleccionado_id", null);
+        }
+        
+        if (perfilIdArg != null && !perfilIdArg.isEmpty()) {
+            loadProductosPorPerfil(perfilIdArg);
+        } else if (perfilSeleccionadoId != null && !perfilSeleccionadoId.isEmpty() && "Empresa".equals(tipoUsuario)) {
+            loadProductosPorPerfil(perfilSeleccionadoId);
+        } else {
+            loadProductos();
+        }
     }
 }
 

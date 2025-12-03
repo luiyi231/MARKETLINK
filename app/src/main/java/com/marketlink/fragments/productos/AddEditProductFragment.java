@@ -80,9 +80,26 @@ public class AddEditProductFragment extends Fragment {
             toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(requireView()).navigateUp());
         }
 
-        // Obtener ID del producto si es edición
+        // Obtener ID del producto si es edición y perfil_id si viene de PlanesYPerfilesFragment
         if (getArguments() != null) {
             productoId = getArguments().getString("producto_id");
+            String perfilIdArg = getArguments().getString("perfil_id");
+            if (perfilIdArg != null && !perfilIdArg.isEmpty()) {
+                perfilComercialId = perfilIdArg;
+            }
+        }
+        
+        // Si no hay perfil_id en argumentos y es empresa, usar el perfil seleccionado
+        if ((perfilComercialId == null || perfilComercialId.isEmpty()) && 
+            (getArguments() == null || getArguments().getString("perfil_id") == null)) {
+            SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+            String tipoUsuario = prefs.getString("user_tipo", "Cliente");
+            if ("Empresa".equals(tipoUsuario) || "Administrador".equals(tipoUsuario)) {
+                String perfilSeleccionadoId = prefs.getString("perfil_comercial_seleccionado_id", null);
+                if (perfilSeleccionadoId != null && !perfilSeleccionadoId.isEmpty()) {
+                    perfilComercialId = perfilSeleccionadoId;
+                }
+            }
         }
 
         etNombre = view.findViewById(R.id.et_nombre);
@@ -223,13 +240,30 @@ public class AddEditProductFragment extends Fragment {
             public void onResponse(Call<List<PerfilComercial>> call, Response<List<PerfilComercial>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     perfiles = response.body();
-                    // Usar el primer perfil por defecto
-                    if (perfiles.size() > 0) {
-                        perfilComercialId = perfiles.get(0).getId();
+                    // Si no hay perfil_id predefinido, usar el perfil seleccionado o el primero
+                    if (perfilComercialId == null || perfilComercialId.isEmpty()) {
+                        // Intentar obtener el perfil seleccionado
+                        SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+                        String perfilSeleccionadoId = prefs.getString("perfil_comercial_seleccionado_id", null);
+                        
+                        if (perfilSeleccionadoId != null && !perfilSeleccionadoId.isEmpty()) {
+                            // Verificar que el perfil seleccionado existe en la lista
+                            boolean existe = perfiles.stream()
+                                .anyMatch(p -> perfilSeleccionadoId.equals(p.getId()));
+                            if (existe) {
+                                perfilComercialId = perfilSeleccionadoId;
+                            } else if (perfiles.size() > 0) {
+                                perfilComercialId = perfiles.get(0).getId();
+                            }
+                        } else if (perfiles.size() > 0) {
+                            perfilComercialId = perfiles.get(0).getId();
+                        }
                     }
                 } else {
-                    Toast.makeText(getContext(), "Debe tener al menos un perfil comercial", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(requireView()).navigateUp();
+                    if (perfilComercialId == null || perfilComercialId.isEmpty()) {
+                        Toast.makeText(getContext(), "Debe tener al menos un perfil comercial", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(requireView()).navigateUp();
+                    }
                 }
             }
 

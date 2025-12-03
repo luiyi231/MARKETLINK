@@ -65,6 +65,17 @@ public class DashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Verificar tipo de usuario - Solo empresas y admin pueden ver dashboard
+        android.content.SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs",
+                android.content.Context.MODE_PRIVATE);
+        String tipoUsuario = prefs.getString("user_tipo", "Cliente");
+
+        if ("Cliente".equals(tipoUsuario)) {
+            // Redirigir clientes a HomeFragment
+            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_homeFragment);
+            return;
+        }
+
         // Setup Toolbar with Navigation Drawer
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         if (getActivity() != null && toolbar != null) {
@@ -121,11 +132,13 @@ public class DashboardFragment extends Fragment {
                     case "productCatalogFragment":
                         destinationId = R.id.productCatalogFragment;
                         break;
+                    case "planesYPerfilesFragment":
+                        destinationId = R.id.planesYPerfilesFragment;
+                        break;
                     case "nav_companies":
                         // Navigate to EmpresaListFragment
                         destinationId = R.id.empresaListFragment;
                         break;
-
                     case "nav_reports":
                         // Navigate to ReportesFragment
                         destinationId = R.id.reportesFragment;
@@ -293,8 +306,8 @@ public class DashboardFragment extends Fragment {
         // Módulos específicos según tipo de usuario
         if ("Empresa".equals(tipoUsuario) || "Administrador".equals(tipoUsuario)) {
             // Solo empresas y administradores ven estos módulos administrativos
-            modules.add(new Module("Perfiles Comerciales", R.drawable.ic_storefront, R.drawable.bg_card_profiles,
-                    "nav_companies"));
+            modules.add(new Module("Planes y Perfiles", R.drawable.ic_storefront, R.drawable.bg_card_profiles,
+                    "planesYPerfilesFragment"));
             modules.add(new Module("Informes y Métricas", R.drawable.ic_bar_chart, R.drawable.bg_gradient_reports,
                     "nav_reports"));
         }

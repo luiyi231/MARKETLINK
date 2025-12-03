@@ -66,11 +66,16 @@ public class LoginFragment extends Fragment {
             @Override
             public void onResponse(retrofit2.Call<com.marketlink.models.AuthResponse> call,
                     retrofit2.Response<com.marketlink.models.AuthResponse> response) {
+                // Verificar que el fragment esté adjunto antes de continuar
+                if (!isAdded() || getActivity() == null || getContext() == null) {
+                    return;
+                }
+
                 if (response.isSuccessful() && response.body() != null) {
                     com.marketlink.models.AuthResponse authResponse = response.body();
 
                     // Guardar token y datos del usuario
-                    SharedPreferences prefs = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences prefs = getActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("auth_token", authResponse.getToken());
                     editor.putString("user_id", authResponse.getUsuarioId());
@@ -82,16 +87,28 @@ public class LoginFragment extends Fragment {
 
                     Toast.makeText(getContext(), "Bienvenido " + authResponse.getNombre(), Toast.LENGTH_SHORT).show();
 
-                    // Navigate to Dashboard
-                    Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dashboardFragment);
+                    // Navigate según el tipo de usuario
+                    String rol = authResponse.getRol();
+                    if (view != null && isAdded()) {
+                        if ("Cliente".equals(rol)) {
+                            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
+                        } else {
+                            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dashboardFragment);
+                        }
+                    }
                 } else {
-                    Toast.makeText(getContext(), "Login fallido: " + response.message(), Toast.LENGTH_SHORT).show();
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "Login fallido: " + response.message(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<com.marketlink.models.AuthResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                // Verificar que el fragment esté adjunto antes de mostrar el error
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
